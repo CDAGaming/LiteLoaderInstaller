@@ -6,8 +6,8 @@ buildscript {
         }
     }
     dependencies {
-        classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.2'
-        classpath 'gradle.plugin.edu.sc.seis.gradle:launch4j:2.4.3'
+        classpath 'com.github.jengelman.gradle.plugins:shadow:4.0.2'
+        classpath 'gradle.plugin.edu.sc.seis.gradle:launch4j:2.4.4'
     }
 }
 
@@ -15,18 +15,17 @@ apply plugin: 'java'
 apply plugin: 'edu.sc.seis.launch4j'
 apply plugin: 'com.github.johnrengelman.shadow'
 
-// createExe dependsOn doesn't work
 defaultTasks 'prepareManifest', 'build', 'createExe', 'gather'
 
 
 group               = 'com.mumfrey'
 ext.revision        = project.verRevision == "0" ? "" : ".${project.verRevision}"
-version             = "${project.verMajor}.${project.verMinor}${project.revision}${project.verRelease}"
+version             = "${project.verMajor}.${project.verMinor}${project.revision}-${project.verRelease}"
 ext.mcversion       = "${project.verMajor}.${project.verMinor}${project.revision}"
 ext.msversion       =  "${project.verMajor}.${project.verMinor}.${project.verRevision}.${project.verBuild}"
 archivesBaseName    = 'liteloader-installer'
-targetCompatibility = '1.8'
-sourceCompatibility = '1.8'
+targetCompatibility = JavaVersion.VERSION_1_6
+sourceCompatibility = JavaVersion.VERSION_1_6
 
 repositories {
     mavenCentral()
@@ -65,15 +64,17 @@ task prepareManifest(type: Copy) {
 }
 
 createExe {
+    dependsOn 'prepareManifest'
+    
     copyConfigurable = project.tasks.shadowJar.outputs.files
-    jar              = 'lib/' + project.tasks.shadowJar.archiveName
+    jar              = "lib/${project.tasks.shadowJar.archiveName}"
     icon             = "${projectDir}/createExe/liteloader_installer_icon.ico"
     manifest         = "${tasks.createExe.temporaryDir}/liteloader_installer_manifest.xml"
     outfile          = tasks.shadowJar.archiveName - ".jar" + ".exe"
     version          = project.msversion
     internalName     = project.sxsname
     productName      = "LiteLoader"
-    fileDescription  = "LiteLoader Installer for Minecraft ${project.mcversion} release {project.verRelease}"
+    fileDescription  = "LiteLoader Installer for Minecraft ${project.mcversion} - Release ${project.verRelease}"
     copyright        = "Copyright (C) 2013-2018 Adam Mummery-Smith"
 }
 

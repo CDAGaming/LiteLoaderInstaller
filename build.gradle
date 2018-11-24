@@ -65,7 +65,7 @@ task prepareManifest(type: Copy) {
 
 createExe {
     dependsOn 'prepareManifest'
-    
+
     copyConfigurable = project.tasks.shadowJar.outputs.files
     jar              = "lib/${project.tasks.shadowJar.archiveName}"
     icon             = "${projectDir}/createExe/liteloader_installer_icon.ico"
@@ -80,7 +80,7 @@ createExe {
 
 task gather(type: Copy) {
     dependsOn 'createExe'
-    from 'build/createExe/' + createExe.outfile
+    from "build/launch4j/${createExe.outfile}"
     into 'build/libs/'
 }
 
